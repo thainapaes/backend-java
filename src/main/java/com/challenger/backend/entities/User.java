@@ -16,10 +16,10 @@ import java.util.List;
 @Setter
 @Data
 @Builder
-public class Usuario {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @JsonIgnore
     private Long id;
     @NotNull
     private String firstName;
@@ -46,10 +46,10 @@ public class Usuario {
     //@JsonView(Views.DetailedView.class)
     private Date lastLogin;
     @ElementCollection
-    private List<Car> carList;
+    private List<Car> carsList;
 
-    public Usuario(String firstName, String lastName, String email, Date birthday, String login, String password,
-                   String phone, List<Car> carList) {
+    public User(String firstName, String lastName, String email, Date birthday, String login, String password,
+                String phone, List<Car> carsList) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -57,9 +57,9 @@ public class Usuario {
         this.login = login;
         this.password = password;
         this.phone = phone;
-        this.carList = carList;
+        this.carsList = carsList;
     }
 
-    public Usuario() {}
+    public User() {}
 
 }

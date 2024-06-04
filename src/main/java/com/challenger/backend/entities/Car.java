@@ -11,10 +11,10 @@ import lombok.*;
 @Setter
 @Data
 @Builder
+@Table(name = "cars")
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE) // Configuração para auto incrementar o ID
-    @JsonIgnore
     private Long id;
     @NotNull
     private String model;

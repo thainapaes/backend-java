@@ -4,6 +4,7 @@ import com.challenger.backend.entities.Car;
 import com.challenger.backend.services.CarService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,32 +20,39 @@ public class CarController {
         this.carService = carService;
     }
 
-    @GetMapping("/vehicles")
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping("/cars")
     public ResponseEntity<List<Car>> allVehicles() {
         return ResponseEntity.ok(carService.allVehicles());
     }
 
-    @GetMapping("/vehicles/{id}")
+    @GetMapping("/cars/{id}")
     public ResponseEntity<Car> getVehicle(@PathVariable Long id, @Valid String licensePlate) {
         return ResponseEntity.ok(carService.getVehicle(id, licensePlate));
     }
 
-    @PostMapping("/vehicles")
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping("/cars")
     public ResponseEntity<Car> createVehicle(@Valid @RequestBody Car car) {
         Car createdCar = carService.saveVehicle(car);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCar);
-        //return ResponseEntity.created(URI.create("/vehicles/" + createdVehicle.getId())).body(createdVehicle);
+        //return ResponseEntity.created(URI.create("/cars/" + createdVehicle.getId())).body(createdVehicle);
     }
 
-    @DeleteMapping("/vehicles/{id}")
-    public ResponseEntity<String> deleteVehicle(@PathVariable @Valid @RequestBody Long id,
-                                                @RequestParam @Valid String licensePlate) {
+    @CrossOrigin(origins = "http://localhost:4200")
+    @DeleteMapping("/cars/{id}")
+    public ResponseEntity<HttpStatusCode> deleteVehicle(@PathVariable @Valid @RequestBody Long id,
+                                                        @RequestParam @Valid String licensePlate) {
         HttpStatus httpResponse = carService.deleteVehicle(id, licensePlate);
-        return ResponseEntity.status(httpResponse).body(
-                httpResponse.equals(HttpStatus.NOT_FOUND) ? "Ocorreu um erro no momento da deleçao" : "Veiculo excluido");
+        if (httpResponse.equals(HttpStatus.OK)) {
+            return ResponseEntity.status(HttpStatus.OK).body(HttpStatusCode.valueOf(200));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpStatusCode.valueOf(404));
+        }
     }
 
-    @PatchMapping("/vehicles/{id}")
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PatchMapping("/cars/{id}")
     public ResponseEntity<Car> updateVehicle(@PathVariable Long id, @Valid @RequestParam String licensePlate,
                                              @Valid @RequestBody Car car) {
         Car updateCar = carService.updateVehicle(id, car, licensePlate);

@@ -1,9 +1,9 @@
 package com.challenger.backend.services;
 
 import com.challenger.backend.entities.Car;
-import com.challenger.backend.entities.Usuario;
+import com.challenger.backend.entities.User;
 import com.challenger.backend.exceptions.AppException;
-import com.challenger.backend.repository.IUsuarioRepository;
+import com.challenger.backend.repository.IUserRepository;
 import com.challenger.backend.repository.ICarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,17 +17,17 @@ public class CarService {
     @Autowired
     ICarRepository carRepository;
     @Autowired
-    IUsuarioRepository usuarioRepository;
+    IUserRepository userRepository;
 
     public List<Car> allVehicles() {
         return carRepository.findAll();
     }
 
     public Car getVehicle(Long id, String licensePlate) {
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        Optional<User> user = userRepository.findById(id);
         Car c = null;
-        if (usuario.isPresent()) {
-            for(Car car : usuario.get().getCarList()) {
+        if (user.isPresent()) {
+            for(Car car : user.get().getCarsList()) {
                 if (licensePlate.equals(car.getLicensePlate())) {
                     c = car;
                 }
@@ -63,11 +63,11 @@ public class CarService {
     }
 
     public HttpStatus deleteVehicle(Long id, String licensePlate) {
-        Optional<Usuario> clientOptional = usuarioRepository.findById(id);
+        Optional<User> clientOptional = userRepository.findById(id);
         if (clientOptional.isPresent()) {
-            Usuario usuario = clientOptional.get();
+            User user = clientOptional.get();
             Car carToRemove = null;
-            for (Car c : usuario.getCarList()) {
+            for (Car c : user.getCarsList()) {
                 if (c.getLicensePlate().equals(licensePlate)) {
                     carToRemove = c;
                     break;
@@ -75,8 +75,8 @@ public class CarService {
             }
 
             if (carToRemove != null) {
-                usuario.getCarList().remove(carToRemove);
-                usuarioRepository.save(usuario); // Salva o usuário atualizado
+                user.getCarsList().remove(carToRemove);
+                userRepository.save(user); // Salva o usuário atualizado
 
                 carRepository.delete(carToRemove); // Exclui o veículo
                 return HttpStatus.OK;
@@ -89,23 +89,23 @@ public class CarService {
     }
 
     public Car updateVehicle(Long id, Car car, String licensePlate) {
-        Optional<Usuario> usuarioFound = usuarioRepository.findById(id);
+        Optional<User> userFound = userRepository.findById(id);
         Car v = null;
-        if (usuarioFound.isPresent()) {
-            for(Car c : usuarioFound.get().getCarList()) {
+        if (userFound.isPresent()) {
+            for(Car c : userFound.get().getCarsList()) {
                 if (c.getLicensePlate().equals(licensePlate)) {
                     Optional<Car> carOptional = carRepository.findByLicensePlate(c.getLicensePlate());
                     if (carOptional.isPresent()) {
                         v = carOptional.get();
-                        if (!car.getColor().isEmpty()) {
+                        if (!car.getColor().isEmpty() && !car.getColor().equals(v.getColor())) {
                             v.setColor(car.getColor());
                         }
 
-                        if (!car.getModel().isEmpty()) {
+                        if (!car.getModel().isEmpty() && !car.getModel().equals(v.getModel())) {
                             v.setModel(car.getModel());
                         }
 
-                        if (!car.getLicensePlate().isEmpty()) {
+                        if (!car.getLicensePlate().isEmpty() && !car.getLicensePlate().equals(v.getLicensePlate())) {
                             Optional<Car> license = carRepository.findByLicensePlate(car.getLicensePlate());
                             if (license.isEmpty()) {
                                 throw new AppException("License plate already exists", HttpStatus.BAD_REQUEST);
@@ -114,7 +114,7 @@ public class CarService {
                             }
                         }
 
-                        if (car.getYear() > 0) {
+                        if (car.getYear() > 0 && car.getYear() != v.getYear()) {
                             v.setYear(car.getYear());
                         }
 
