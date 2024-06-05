@@ -26,6 +26,8 @@ public class Car {
     @NotNull
     @Column(name = "vehicle_year")
     private int year;
+    @JoinColumn(name = "car_id")
+    private long idCar;
 
     public Car(String model, String licensePlate, String color, int year) {
         this.model = model;

@@ -2,7 +2,6 @@ package com.challenger.backend.controllers;
 
 import com.challenger.backend.dto.LoginRequestDTO;
 import com.challenger.backend.dto.ResponseDTO;
-import com.challenger.backend.entities.User;
 import com.challenger.backend.infra.sercurity.TokenService;
 import com.challenger.backend.repository.IUserRepository;
 import com.challenger.backend.services.UserService;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+    @Autowired
     UserService userService;
     @Autowired
     IUserRepository repository;
@@ -26,10 +26,10 @@ public class AuthController {
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/signin")
     public ResponseEntity login(@RequestBody LoginRequestDTO body){
-        User user = this.repository.findByLogin(body.login()).orElseThrow(() -> new RuntimeException("User not found"));
-        if(passwordEncoder.matches(body.password(), user.getPassword())) {
-            String token = this.tokenService.generateToken(user);
-            return ResponseEntity.ok(new ResponseDTO(user.getId(), token));
+        ResponseDTO responseDTO = this.userService.validatePass(body.login(), body.password());
+
+        if(responseDTO != null) {
+            return ResponseEntity.ok(responseDTO);
         }
         return ResponseEntity.badRequest().build();
     }

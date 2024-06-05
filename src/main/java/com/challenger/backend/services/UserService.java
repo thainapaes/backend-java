@@ -10,7 +10,6 @@ import com.challenger.backend.repository.ICarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,51 +41,17 @@ public class UserService {
         return user;
     }
 
-    public User getLogin(String login, String password) {
-        Optional<User> user = userRepository.findByLogin(login);
-        if (user.isPresent()) {
-            String passwordCript = cript.encode(user.get().getPassword());
-            if (!cript.matches(password, passwordCript)) {
-                return user.get();
-            }
-        } else {
-            throw new AppException("User not found", HttpStatus.NOT_FOUND);
-        }
-
-        return user.get();
-    }
-
-    public Optional<User> getLoginOptional(String login) {
-        Optional<User> user = userRepository.findByLogin(login);
-        if (user.isEmpty()) {
-            throw new AppException("User not found", HttpStatus.NOT_FOUND);
-        }
-        return user;
-    }
-
-    /*public ResponseDTO validadePass(User user, String password) {
-        if (passwordEncoder.matches(user.getPassword(), password)) {
+    public ResponseDTO validatePass(String login, String password) {
+        User user = this.userRepository.findByLogin(login).orElseThrow(() -> new RuntimeException("User not found"));
+        if (passwordEncoder.matches(password, user.getPassword())) {
             String token = this.tokenService.generateToken(user);
-            return new ResponseDTO(user, token);
-        } else {
-            return null;
-        }
-    }
 
-    /*
-    public String getLoginOptional(String login, String password) {
-        Optional<User> user = userRepository.findByLogin(login);
-        if (user.isEmpty()) {
-            throw new AppException("User not found", HttpStatus.NOT_FOUND);
+            user.setLastLogin(new Date());
+            updateOneItemUser(user);
+            return new ResponseDTO(user.getId(), token);
         }
-
-        if (passwordEncoder.matches(user.get().getPassword(), password)) {
-            return this.tokenService.generateToken(user.get());
-        } else {
-            return null;
-        }
+        return null;
     }
-    * */
 
     public User saveUser(User user) {
         if (!user.getEmail().isEmpty()) {
@@ -135,7 +100,7 @@ public class UserService {
             for(Car car : user.getCarsList()) {
                 Optional<Car> carExisted = carRepository.findByLicensePlate(car.getLicensePlate());
                 if (carExisted.isEmpty()) {
-                    Car c = carService.saveVehicle(car);
+                    Car c = carService.saveCar(car);
                     cars.add(c);
                 }
             }
@@ -143,7 +108,6 @@ public class UserService {
         }
 
         user.setCreatedDate(new Date());
-
         return userRepository.save(user);
     }
 
@@ -155,6 +119,10 @@ public class UserService {
             userRepository.delete(clientOptional.get());
             return HttpStatus.OK;
         }
+    }
+
+    public User updateOneItemUser(User user) {
+        return this.userRepository.save(user);
     }
 
     public User updateUser(Long id, User user) {

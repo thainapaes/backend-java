@@ -39,11 +39,7 @@ public class User {
     private String password;
     @NotNull
     private String phone;
-    @JsonIgnore
-    //@JsonView(Views.DetailedView.class)
     private Date createdDate;
-    @JsonIgnore
-    //@JsonView(Views.DetailedView.class)
     private Date lastLogin;
     @ElementCollection
     private List<Car> carsList;
