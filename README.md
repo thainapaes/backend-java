@@ -3,39 +3,43 @@ Este projeto constitui a parte de backend do desafio, onde será realizada a com
 
 ## Estórias de Usuário
 
-1. **Criação da estrutura Spring Boot do sistema, configuração do banco de dados e do pom.xml**
-   - 1.1. Necessário levantar o sistema para entender se a configuração foi realizada com sucesso;
+1. **[BCKD-1] Criação da estrutura Spring Boot do sistema, configuração do banco de dados e do pom.xml**
+   - [BCKDS-11] Necessário levantar o sistema para entender se a configuração foi realizada com sucesso;
 
-2. **Criação das classes de entity, repository, service e controller**
-   - 2.1. Criação das classes e implementação das configurações para o funcionamento das rotas;
-   - 2.2. Implementação dos métodos no service e no controller, aplicando as regras básicas de negócio e armazenamento no banco de dados;
-   - 2.3. Teste através do Postman das URLs construídas;
+2. **[BCKD-2] Criação das classes de entity, repository, service e controller**
+   - [BCKDS-21] Criação das classes e implementação das configurações para o funcionamento das rotas;
+   - [BCKDS-22] Implementação dos métodos no service e no controller, aplicando as regras básicas de negócio e armazenamento no banco de dados;
+   - [BCKDS-23] Teste através do Postman das URLs construídas;
 
-3. **Configuração do Swagger**
-   - 3.1. Ajustes de erros que apareceram durante a execução das requisições;
+3. **[BCKD-3] Configuração do Swagger**
+   - [BCKDS-31] Ajustes de erros que apareceram durante a execução das requisições;
 
-4. **Implementação da conexão com o frontend**
-   - 4.1. Criar a configuração de CORS;
-   - 4.2. Verificar se as URLs estão sendo chamadas de maneira correta;
-   - 4.3. Ajustes nos endpoints para fazer as requisições;
-   - 4.4. Ajustes nos objetos em relação ao tratamento dos dados que entram na aplicação;
+4. **[BCKD-4] Implementação da conexão com o frontend**
+   - [BCKDS-41] Criar a configuração de CORS;
+   - [BCKDS-42] Verificar se as URLs estão sendo chamadas de maneira correta;
+   - [BCKDS-43] Ajustes nos endpoints para fazer as requisições;
+   - [BCKDS-44] Ajustes nos objetos em relação ao tratamento dos dados que entram na aplicação;
 
-5. **Implementação da autenticação JWT**
-   - 5.1. Criação das classes de segurança e geração do token;
-   - 5.2. Criação das classes que fazem a requisição de login e seus retornos;
-   - 5.3. Ajustes de rota para verificar se o usuário está autenticado ou não;
-   - 5.4. Modificação de alguns métodos nos services para realizar a requisição certa no banco;
+5. **[BCKD-5] Implementação da autenticação JWT**
+   - [BCKDS-51] Criação das classes de segurança e geração do token;
+   - [BCKDS-52] Criação das classes que fazem a requisição de login e seus retornos;
+   - [BCKDS-53] Ajustes de rota para verificar se o usuário está autenticado ou não;
+   - [BCKDS-54] Modificação de alguns métodos nos services para realizar a requisição certa no banco;
 
-6. **Tratamento de exceções e envio correto dos status**
-   - 6.1. Criar as exceções necessárias;
-   - 6.2. Ajustar os status que retornam de acordo com as exceções;
+6. **[BCKD-6] Tratamento de exceções e envio correto dos status**
+   - [BCKDS-61] Criar as exceções necessárias;
+   - [BCKDS-62] Ajustar os status que retornam de acordo com as exceções;
 
-7. **Deploy do sistema utilizando AWS**
-   - 7.1. Atualizar o caminho que irá receber do front para realizar a integração correta;
+7. **[BCKD-7] Deploy do sistema utilizando AWS**
+   - [BCKDS-71] Atualizar o caminho que irá receber do front para realizar a integração correta;
 
-8. **Criação dos testes unitários**
-   - 8.1. Criação dos mocks para o banco de dados;
-   - 8.2. Execução dos testes.
+8. **[BCKD-8] Criação dos testes unitários**
+   - [BCKDS-81] Criação dos mocks para o banco de dados;
+   - [BCKDS-82] Execução dos testes.
+  
+_Codificação das estórias:_
+   - _[BCKD1]: BCKD -> o código para identificação | 1 -> o número da estória_
+   - _BCKDS-11]: BCKD -> indica que é uma subtarefa da estória | 11 -> numeração de subitem, ex 1.1 = 11_
 
 ## Solução
 
