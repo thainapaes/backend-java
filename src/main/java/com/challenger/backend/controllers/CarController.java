@@ -1,5 +1,7 @@
 package com.challenger.backend.controllers;
 
+import com.challenger.backend.dto.CarroPatchDTO;
+import com.challenger.backend.dto.CarroPostDTO;
 import com.challenger.backend.entities.Car;
 import com.challenger.backend.services.CarService;
 import jakarta.validation.Valid;
@@ -26,17 +28,21 @@ public class CarController {
         return ResponseEntity.ok(carService.allVehicles());
     }
 
-    @GetMapping("/cars/{id}")
+    /*@GetMapping("/cars/{id}")
     public ResponseEntity<Car> getVehicle(@PathVariable Long id, @Valid String licensePlate) {
         return ResponseEntity.ok(carService.getVehicle(id, licensePlate));
+    }*/
+
+    @GetMapping("/cars/{id}")
+    public ResponseEntity<List<Car>> getCar(@PathVariable Long id) {
+        return ResponseEntity.ok(carService.getCar(id));
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/cars")
-    public ResponseEntity<Car> createVehicle(@Valid @RequestBody Car car) {
-        Car createdCar = carService.saveVehicle(car);
+    public ResponseEntity<Car> createVehicle(@RequestBody CarroPostDTO body) {
+        Car createdCar = carService.saveCarWithUser(body.car(), body.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCar);
-        //return ResponseEntity.created(URI.create("/cars/" + createdVehicle.getId())).body(createdVehicle);
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
@@ -53,9 +59,8 @@ public class CarController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PatchMapping("/cars/{id}")
-    public ResponseEntity<Car> updateVehicle(@PathVariable Long id, @Valid @RequestParam String licensePlate,
-                                             @Valid @RequestBody Car car) {
-        Car updateCar = carService.updateVehicle(id, car, licensePlate);
+    public ResponseEntity<Car> updateVehicle(@PathVariable Long id, @RequestBody CarroPatchDTO body) {
+        Car updateCar = carService.updateVehicle(id, body.car() , body.licensePlate());
         return (updateCar == null)
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(updateCar)
                 : ResponseEntity.status(HttpStatus.OK).body(updateCar);

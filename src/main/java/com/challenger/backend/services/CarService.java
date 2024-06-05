@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +39,18 @@ public class CarService {
         return c;
     }
 
+    public List<Car> getCar(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        Car c = null;
+        List<Car> cList = new ArrayList<>();
+        if (user.isPresent()) {
+           cList = user.get().getCarsList();
+        } else {
+            throw new AppException("User not found", HttpStatus.NOT_FOUND);
+        }
+        return cList;
+    }
+
     public Car saveVehicle(Car car) {
         if (!car.getLicensePlate().isEmpty()) {
             Optional<Car> carExisted = carRepository.findByLicensePlate(car.getLicensePlate());
@@ -59,6 +72,36 @@ public class CarService {
         if (car.getYear() <= 0) {
             throw new AppException("O campo 'Ano' foi preenchido de maneira incorreta", HttpStatus.BAD_REQUEST);
         }
+        return carRepository.save(car);
+    }
+
+    public Car saveCarWithUser(Car car, Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+
+        if (!car.getLicensePlate().isEmpty()) {
+            Optional<Car> carExisted = carRepository.findByLicensePlate(car.getLicensePlate());
+            if (carExisted.isPresent()) {
+                throw new AppException("Placa já existente", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            throw new AppException("O campo da placa nao foi preenchido", HttpStatus.BAD_REQUEST);
+        }
+
+        if (car.getColor() == null) {
+            throw new AppException("O campo cor nao foi preenchido", HttpStatus.BAD_REQUEST);
+        }
+
+        if (car.getModel() == null) {
+            throw new AppException("O campo modelo nao foi preenchido", HttpStatus.BAD_REQUEST);
+        }
+
+        if (car.getYear() <= 0) {
+            throw new AppException("O campo 'Ano' foi preenchido de maneira incorreta", HttpStatus.BAD_REQUEST);
+        }
+
+        user.getCarsList().add(car);
+        userRepository.save(user);
+
         return carRepository.save(car);
     }
 

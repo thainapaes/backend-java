@@ -1,18 +1,24 @@
 package com.challenger.backend.services;
 
+import com.challenger.backend.dto.ResponseDTO;
 import com.challenger.backend.entities.Car;
 import com.challenger.backend.entities.User;
 import com.challenger.backend.exceptions.AppException;
+import com.challenger.backend.infra.sercurity.TokenService;
 import com.challenger.backend.repository.IUserRepository;
 import com.challenger.backend.repository.ICarRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     @Autowired
@@ -21,6 +27,8 @@ public class UserService {
     ICarRepository carRepository;
     @Autowired
     CarService carService;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     BCryptPasswordEncoder cript = new BCryptPasswordEncoder();
 
@@ -48,6 +56,38 @@ public class UserService {
         return user.get();
     }
 
+    public Optional<User> getLoginOptional(String login) {
+        Optional<User> user = userRepository.findByLogin(login);
+        if (user.isEmpty()) {
+            throw new AppException("User not found", HttpStatus.NOT_FOUND);
+        }
+        return user;
+    }
+
+    /*public ResponseDTO validadePass(User user, String password) {
+        if (passwordEncoder.matches(user.getPassword(), password)) {
+            String token = this.tokenService.generateToken(user);
+            return new ResponseDTO(user, token);
+        } else {
+            return null;
+        }
+    }
+
+    /*
+    public String getLoginOptional(String login, String password) {
+        Optional<User> user = userRepository.findByLogin(login);
+        if (user.isEmpty()) {
+            throw new AppException("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (passwordEncoder.matches(user.get().getPassword(), password)) {
+            return this.tokenService.generateToken(user.get());
+        } else {
+            return null;
+        }
+    }
+    * */
+
     public User saveUser(User user) {
         if (!user.getEmail().isEmpty()) {
             Optional<User> jaExiste = userRepository.findByEmail(user.getEmail());
@@ -69,8 +109,7 @@ public class UserService {
         }
 
         if (!user.getPassword().isEmpty()) {
-            String senhaCriptografada = cript.encode(user.getPassword());
-            user.setPassword(senhaCriptografada);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else {
             throw new AppException("O campo da senha nao foi preenchido", HttpStatus.BAD_REQUEST);
         }
@@ -157,6 +196,10 @@ public class UserService {
                 if (!cript.matches(u.getPassword(), passwordCript)) {
                     u.setPassword(passwordCript);
                 }
+            }
+
+            if(!user.getCarsList().isEmpty()) {
+                u.setCarsList(user.getCarsList());
             }
 
             return userRepository.save(u);
