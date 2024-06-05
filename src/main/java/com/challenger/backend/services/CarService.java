@@ -20,23 +20,8 @@ public class CarService {
     @Autowired
     IUserRepository userRepository;
 
-    public List<Car> allVehicles() {
+    public List<Car> allCars() {
         return carRepository.findAll();
-    }
-
-    public Car getVehicle(Long id, String licensePlate) {
-        Optional<User> user = userRepository.findById(id);
-        Car c = null;
-        if (user.isPresent()) {
-            for(Car car : user.get().getCarsList()) {
-                if (licensePlate.equals(car.getLicensePlate())) {
-                    c = car;
-                }
-            }
-        } else {
-            throw new AppException("User not found", HttpStatus.NOT_FOUND);
-        }
-        return c;
     }
 
     public List<Car> getCar(Long id) {
@@ -51,7 +36,7 @@ public class CarService {
         return cList;
     }
 
-    public Car saveVehicle(Car car) {
+    public Car saveCar(Car car) {
         if (!car.getLicensePlate().isEmpty()) {
             Optional<Car> carExisted = carRepository.findByLicensePlate(car.getLicensePlate());
             if (carExisted.isPresent()) {
@@ -72,6 +57,7 @@ public class CarService {
         if (car.getYear() <= 0) {
             throw new AppException("O campo 'Ano' foi preenchido de maneira incorreta", HttpStatus.BAD_REQUEST);
         }
+
         return carRepository.save(car);
     }
 
@@ -99,13 +85,15 @@ public class CarService {
             throw new AppException("O campo 'Ano' foi preenchido de maneira incorreta", HttpStatus.BAD_REQUEST);
         }
 
+        Car carRetorno = carRepository.save(car);
+
         user.getCarsList().add(car);
         userRepository.save(user);
 
-        return carRepository.save(car);
+        return carRetorno;
     }
 
-    public HttpStatus deleteVehicle(Long id, String licensePlate) {
+    public HttpStatus deleteCar(Long id, String licensePlate) {
         Optional<User> clientOptional = userRepository.findById(id);
         if (clientOptional.isPresent()) {
             User user = clientOptional.get();
@@ -119,19 +107,19 @@ public class CarService {
 
             if (carToRemove != null) {
                 user.getCarsList().remove(carToRemove);
-                userRepository.save(user); // Salva o usuário atualizado
+                userRepository.save(user);
 
-                carRepository.delete(carToRemove); // Exclui o veículo
+                carRepository.delete(carToRemove);
                 return HttpStatus.OK;
             } else {
-                return HttpStatus.NOT_FOUND; // Veículo não encontrado na lista do usuário
+                return HttpStatus.NOT_FOUND;
             }
         }
 
         return HttpStatus.NOT_FOUND;
     }
 
-    public Car updateVehicle(Long id, Car car, String licensePlate) {
+    public Car updateCar(Long id, Car car, String licensePlate) {
         Optional<User> userFound = userRepository.findById(id);
         Car v = null;
         if (userFound.isPresent()) {

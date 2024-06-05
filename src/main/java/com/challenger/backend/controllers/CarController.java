@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController()
-@RequestMapping(produces = "application/json")
+@RequestMapping(value = "/api", produces = "application/json")
 public class CarController {
 
     CarService carService;
@@ -25,13 +25,8 @@ public class CarController {
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/cars")
     public ResponseEntity<List<Car>> allVehicles() {
-        return ResponseEntity.ok(carService.allVehicles());
+        return ResponseEntity.ok(carService.allCars());
     }
-
-    /*@GetMapping("/cars/{id}")
-    public ResponseEntity<Car> getVehicle(@PathVariable Long id, @Valid String licensePlate) {
-        return ResponseEntity.ok(carService.getVehicle(id, licensePlate));
-    }*/
 
     @GetMapping("/cars/{id}")
     public ResponseEntity<List<Car>> getCar(@PathVariable Long id) {
@@ -48,8 +43,8 @@ public class CarController {
     @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/cars/{id}")
     public ResponseEntity<HttpStatusCode> deleteVehicle(@PathVariable @Valid @RequestBody Long id,
-                                                        @RequestParam @Valid String licensePlate) {
-        HttpStatus httpResponse = carService.deleteVehicle(id, licensePlate);
+                                                        @RequestParam String licensePlate) {
+        HttpStatus httpResponse = carService.deleteCar(id, licensePlate);
         if (httpResponse.equals(HttpStatus.OK)) {
             return ResponseEntity.status(HttpStatus.OK).body(HttpStatusCode.valueOf(200));
         } else {
@@ -60,7 +55,7 @@ public class CarController {
     @CrossOrigin(origins = "http://localhost:4200")
     @PatchMapping("/cars/{id}")
     public ResponseEntity<Car> updateVehicle(@PathVariable Long id, @RequestBody CarroPatchDTO body) {
-        Car updateCar = carService.updateVehicle(id, body.car() , body.licensePlate());
+        Car updateCar = carService.updateCar(id, body.car() , body.licensePlate());
         return (updateCar == null)
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(updateCar)
                 : ResponseEntity.status(HttpStatus.OK).body(updateCar);

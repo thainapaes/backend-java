@@ -12,13 +12,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(produces = "application/json")
+@RequestMapping(value = "/api", produces = "application/json")
 @PreAuthorize("permitAll()")
 public class UserController {
     UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getSpecificUser(@RequestBody Long id) {
+        return ResponseEntity.ok(userService.getUser(id));
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
