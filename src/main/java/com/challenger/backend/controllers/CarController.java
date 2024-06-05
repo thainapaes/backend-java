@@ -43,7 +43,7 @@ public class CarController {
     @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/cars/{id}")
     public ResponseEntity<HttpStatusCode> deleteVehicle(@PathVariable @Valid @RequestBody Long id,
-                                                        @RequestParam @Valid String licensePlate) {
+                                                        @RequestParam String licensePlate) {
         HttpStatus httpResponse = carService.deleteCar(id, licensePlate);
         if (httpResponse.equals(HttpStatus.OK)) {
             return ResponseEntity.status(HttpStatus.OK).body(HttpStatusCode.valueOf(200));
